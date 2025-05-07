@@ -38,15 +38,15 @@ public class SatellitesApplication {
 
                 // aggiungo l'inizio dell'intervallo alla lista di istanti di inizio
                 startTimes.add(startTime);
+                // aggiungo la fine dell'intervallo alla lista di istanti di fine
                 endTimes.add(endTime);
             }
 
             if (startTimes.size() != endTimes.size())
                 throw new RuntimeException("Lunghezze delle liste degli istanti di inizio e di fine diverse");
-            //Ordino le liste
-            //intervals.sort(Comparator.comparing(TimeInterval::getStartTime));
+            
+            //Ordino la lista degli istanti di inizio
             Collections.sort(startTimes);
-            Collections.sort(endTimes);
 
             List<Integer> numberOfStartInclusionsList = new ArrayList<>();
             List<Integer> numberOfEndInclusionsList = new ArrayList<>();
@@ -78,18 +78,8 @@ public class SatellitesApplication {
             Integer maxNumberOfIntervalsStartIsIncluded = Collections.max(numberOfStartInclusionsList);
             System.out.println(maxNumberOfIntervalsStartIsIncluded);
 
-            /*List<Integer> maximumsNumbersOfIntervalsStartIsIncluded = numberOfStartInclusionsList.stream().filter(e ->
-                    e.equals(maxNumberOfIntervalsStartIsIncluded)).toList();
-
-            System.out.println(maximumsNumbersOfIntervalsStartIsIncluded.size());*/
-
             Integer maxNumberOfIntervalsEndIsIncluded = Collections.max(numberOfEndInclusionsList);
             System.out.println(maxNumberOfIntervalsEndIsIncluded);
-
-            /*List<Integer> maximumsNumbersOfIntervalsEndIsIncluded = numberOfEndInclusionsList.stream().filter(e ->
-                    e.equals(maxNumberOfIntervalsEndIsIncluded)).toList();
-
-            System.out.println(maximumsNumbersOfIntervalsEndIsIncluded.size());*/
 
             List<Integer> indexesOfMaxNumberStart = new ArrayList<>();
             List<Integer> indexesOfMaxNumberEnd = new ArrayList<>();
