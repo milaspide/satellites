@@ -43,27 +43,27 @@ public class SatellitesApplication {
             }
 
             if (startTimes.size() != endTimes.size())
-                throw new RuntimeException("Lunghezze delle liste degli istanti di inizio e di fine diverse");
-            
-            //Ordino la lista degli istanti di inizio
-            Collections.sort(startTimes);
-
-            List<Integer> numberOfStartInclusionsList = new ArrayList<>();
-            List<Integer> numberOfEndInclusionsList = new ArrayList<>();
+                throw new RuntimeException("The start and end time instant lists have different lengths.");
 
             int listSize = startTimes.size();
 
+            //Ordino la lista degli istanti di inizio
+            Collections.sort(startTimes);
+
+            List<Integer> numberOfIntervalsStartIsIncludedList = new ArrayList<>();
+            List<Integer> numberOfIntervalsEndIsIncludedList = new ArrayList<>();
+
             for (int i = 0; i < listSize; i++) {
 
-                LocalTime start = startTimes.get(i);
+                LocalTime startTime = startTimes.get(i);
 
                 List<TimeInterval> otherIntervals = intervals.stream().filter(e ->
-                        !e.getStartTime().equals(start)).toList();
+                        !e.getStartTime().equals(startTime)).toList();
 
                 int numberOfIntervalsStartIsIncluded = otherIntervals.stream().filter(e ->
-                        !start.isBefore(e.getStartTime()) && !start.isAfter(e.getEndTime())).toList().size();
+                        !startTime.isBefore(e.getStartTime()) && !startTime.isAfter(e.getEndTime())).toList().size();
 
-                numberOfStartInclusionsList.add(numberOfIntervalsStartIsIncluded);
+                numberOfIntervalsStartIsIncludedList.add(numberOfIntervalsStartIsIncluded);
 
                 LocalTime end = endTimes.get(i);
 
@@ -73,40 +73,36 @@ public class SatellitesApplication {
                 int numberOfIntervalsEndIsIncluded = otherEndTimes.stream().filter(e ->
                         !end.isBefore(e.getStartTime()) && !end.isAfter(e.getEndTime())).toList().size();
 
-                numberOfEndInclusionsList.add(numberOfIntervalsEndIsIncluded);
+                numberOfIntervalsEndIsIncludedList.add(numberOfIntervalsEndIsIncluded);
             }
-            Integer maxNumberOfIntervalsStartIsIncluded = Collections.max(numberOfStartInclusionsList);
-            System.out.println(maxNumberOfIntervalsStartIsIncluded);
 
-            Integer maxNumberOfIntervalsEndIsIncluded = Collections.max(numberOfEndInclusionsList);
-            System.out.println(maxNumberOfIntervalsEndIsIncluded);
+            Integer maxNumberOfIntervalsStartIsIncluded = Collections.max(numberOfIntervalsStartIsIncludedList);
+            Integer maxNumberOfIntervalsEndIsIncluded = Collections.max(numberOfIntervalsEndIsIncludedList);
+
+            if (!Objects.equals(maxNumberOfIntervalsStartIsIncluded, maxNumberOfIntervalsEndIsIncluded))
+                throw new RuntimeException("The maximum number of satellites at the start time and at the end time is not the same.");
+
+            int maxNumberOfSatellites = maxNumberOfIntervalsStartIsIncluded;
 
             List<Integer> indexesOfMaxNumberStart = new ArrayList<>();
             List<Integer> indexesOfMaxNumberEnd = new ArrayList<>();
 
             for (int i = 0; i < listSize; i++) {
-                if (numberOfStartInclusionsList.get(i).equals(maxNumberOfIntervalsStartIsIncluded)) {
+                if (numberOfIntervalsStartIsIncludedList.get(i).equals(maxNumberOfIntervalsStartIsIncluded)) {
                     indexesOfMaxNumberStart.add(i);
                 }
 
-                if (numberOfEndInclusionsList.get(i).equals(maxNumberOfIntervalsEndIsIncluded))
+                if (numberOfIntervalsEndIsIncludedList.get(i).equals(maxNumberOfIntervalsEndIsIncluded))
                     indexesOfMaxNumberEnd.add(i);
             }
             for (int i = 0; i < indexesOfMaxNumberStart.size(); i++) {
 
-                LocalTime timeOfIthMaxOfStart = startTimes.get(indexesOfMaxNumberStart.get(i));
+                LocalTime startTimeOfMaxOverlap = startTimes.get(indexesOfMaxNumberStart.get(i));
 
-                LocalTime timeOfIthMaxOfEnd = endTimes.get(indexesOfMaxNumberEnd.get(i));
+                LocalTime endTimeOfMaxOverlap = endTimes.get(indexesOfMaxNumberEnd.get(i));
 
-                int ithMaxNumberOfSatellites = 0;
-                if (Objects.equals(maxNumberOfIntervalsStartIsIncluded, maxNumberOfIntervalsEndIsIncluded))
-                    ithMaxNumberOfSatellites = maxNumberOfIntervalsStartIsIncluded;
-                else
-                    throw new RuntimeException("Il numero massimo di satelliti di inizio e fine non coincidono");
-
-                System.out.println(timeOfIthMaxOfStart + "-" + timeOfIthMaxOfEnd + ";" + ithMaxNumberOfSatellites);
+                System.out.println(startTimeOfMaxOverlap + "-" + endTimeOfMaxOverlap + ";" + maxNumberOfSatellites);
             }
-
         } catch (IOException e) {
             System.err.println("Errore nella lettura del file: " + e.getMessage());
         }
